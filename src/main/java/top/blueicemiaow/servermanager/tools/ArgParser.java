@@ -10,16 +10,23 @@ import java.util.Set;
 /**
  * Small GNU-style command line parser. It understands combined short options
  * ({@code -la}), short options with a value ({@code -t 202601011200}), long flags
- * ({@code --help}) and the {@code --} end-of-options marker.
+ * ({@code --help}), long options with a value ({@code --timeout=5}) and the
+ * {@code --} end-of-options marker.
  */
 public final class ArgParser {
     private final Set<Character> flags = new HashSet<>();
     private final Map<Character, String> values = new HashMap<>();
     private final Set<String> longFlags = new HashSet<>();
+    private final Map<String, String> longValues = new HashMap<>();
     private final List<String> operands = new ArrayList<>();
     private final List<String> unknown = new ArrayList<>();
 
     public ArgParser(List<String> args, String valueOptions, Set<String> acceptedLongFlags) {
+        this(args, valueOptions, acceptedLongFlags, Set.of());
+    }
+
+    public ArgParser(List<String> args, String valueOptions, Set<String> acceptedLongFlags,
+                     Set<String> acceptedLongValueOptions) {
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
 
@@ -37,7 +44,17 @@ public final class ArgParser {
                     name = name.substring(0, equals);
                 }
 
-                if (acceptedLongFlags.contains(name) && value == null) {
+                if (acceptedLongValueOptions.contains(name)) {
+                    if (value == null) {
+                        if (i + 1 < args.size()) {
+                            value = args.get(++i);
+                        } else {
+                            unknown.add(arg);
+                            continue;
+                        }
+                    }
+                    longValues.put(name, value);
+                } else if (acceptedLongFlags.contains(name) && value == null) {
                     longFlags.add(name);
                 } else {
                     unknown.add(arg);
@@ -82,6 +99,10 @@ public final class ArgParser {
 
     public String value(char option) {
         return values.get(option);
+    }
+
+    public String longValue(String option) {
+        return longValues.get(option);
     }
 
     public List<String> operands() {

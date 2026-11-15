@@ -13,20 +13,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * Runs an arbitrary system command in the issuer's current workspace.
- * Linux and other Unix-like systems use bash when available, falling back to /bin/sh.
- * Windows uses cmd.exe. Output is streamed back to the command source and capped
- * so a chat window cannot be flooded.
+ * Runs an executable directly in the issuer's current workspace without going
+ * through a shell. Shell built-ins, pipes, redirection, variable expansion,
+ * globbing and other shell syntax are therefore not interpreted. Quotes are
+ * accepted only to group arguments. Output is streamed back to the command
+ * source and capped so a chat window cannot be flooded.
  */
 public class Sh {
-    private static final String USAGE = "usage: sh <command>";
+    private static final String USAGE = "usage: sh <program> [args ...]";
     private static final int MAX_OUTPUT_LINES = 200;
     private static final int MAX_OUTPUT_CHARS = 20000;
     private static final int MAX_LINE_LENGTH = 1000;
@@ -46,8 +45,16 @@ public class Sh {
     }
 
     private static int execute(CommandSourceStack source, String command) {
-        String trimmed = command == null ? "" : command.trim();
-        if (trimmed.isEmpty()) {
+        List<String> commandLine;
+        try {
+            commandLine = FsUtils.tokenize(command == null ? "" : command.trim());
+        } catch (IllegalArgumentException exception) {
+            FsUtils.error(source, "sh: " + exception.getMessage());
+            FsUtils.success(source, USAGE);
+            return 0;
+        }
+
+        if (commandLine.isEmpty()) {
             FsUtils.error(source, "sh: missing command");
             FsUtils.success(source, USAGE);
             return 0;
@@ -56,17 +63,17 @@ public class Sh {
         Path workspace = WorkspaceHelper.getWorkspace(source);
 
         // Never block the server thread while waiting for an external process.
-        Thread worker = new Thread(() -> run(source, workspace, trimmed), "ServerManager-sh");
+        Thread worker = new Thread(() -> run(source, workspace, commandLine), "ServerManager-sh");
         worker.setDaemon(true);
         worker.start();
         return 1;
     }
 
-    private static void run(CommandSourceStack source, Path workspace, String command) {
+    private static void run(CommandSourceStack source, Path workspace, List<String> commandLine) {
         Process process = null;
 
         try {
-            ProcessBuilder builder = new ProcessBuilder(buildCommandLine(command))
+            ProcessBuilder builder = new ProcessBuilder(commandLine)
                     .directory(workspace.toFile())
                     .redirectErrorStream(true);
 
@@ -108,20 +115,6 @@ public class Sh {
                 process.destroyForcibly();
             }
         }
-    }
-
-    private static List<String> buildCommandLine(String command) {
-        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
-
-        if (os.contains("win")) {
-            return List.of("cmd.exe", "/d", "/s", "/c", command);
-        }
-
-        Path bash = Path.of("/bin/bash");
-        if (Files.isExecutable(bash)) {
-            return List.of(bash.toString(), "-c", command);
-        }
-        return List.of("/bin/sh", "-c", command);
     }
 
     private static Charset outputCharset() {

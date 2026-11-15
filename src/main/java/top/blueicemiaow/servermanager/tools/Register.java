@@ -20,5 +20,7 @@ public class Register {
         CommandRegistrationCallback.EVENT.register(Rm::register);
         CommandRegistrationCallback.EVENT.register(RmDir::register);
         CommandRegistrationCallback.EVENT.register(Sh::register);
+        CommandRegistrationCallback.EVENT.register(WGet::register);
+        CommandRegistrationCallback.EVENT.register(TaR::register);
     }
 }
