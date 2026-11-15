@@ -1,0 +1,11 @@
+# Gradle cache folder
+.gradle
+
+# Gradle build folder
+build
+
+# IntelliJ
+.idea
+
+# Common working directory
+run
