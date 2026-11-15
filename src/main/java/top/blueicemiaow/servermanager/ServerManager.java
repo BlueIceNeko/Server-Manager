@@ -3,6 +3,7 @@ package top.blueicemiaow.servermanager;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.blueicemiaow.servermanager.tools.Register;
 
 public class ServerManager implements ModInitializer {
     public static final String MODID = "server_manager";
@@ -10,5 +11,7 @@ public class ServerManager implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        LOGGER.info("Initializing Server Manager...");
+        Register.commands();
     }
 }
