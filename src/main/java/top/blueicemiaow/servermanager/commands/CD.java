@@ -15,7 +15,7 @@ import java.util.List;
 public class CD {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection environment) {
         dispatcher.register(Commands.literal("cd")
-                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(context -> changeDirectory(context.getSource(), List.of()))
                 .then(Commands.argument("path", StringArgumentType.greedyString())
                         .executes(context -> {

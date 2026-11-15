@@ -76,7 +76,7 @@ public final class FsUtils {
                 quote = c;
                 inToken = true;
             } else if (Character.isWhitespace(c)) {
-                if (inToken || current.length() > 0) {
+                if (inToken || !current.isEmpty()) {
                     result.add(current.toString());
                     current.setLength(0);
                     inToken = false;
@@ -90,7 +90,7 @@ public final class FsUtils {
         if (quote != 0) {
             throw new IllegalArgumentException("unmatched quote");
         }
-        if (inToken || current.length() > 0) {
+        if (inToken || !current.isEmpty()) {
             result.add(current.toString());
         }
         return result;
@@ -250,7 +250,7 @@ public final class FsUtils {
 
     public static boolean isRoot(Path path) {
         Path root = path.getRoot();
-        return root != null && path.equals(root);
+        return path.equals(root);
     }
 
     public static boolean isEmptyDirectory(Path path) throws IOException {
@@ -274,7 +274,7 @@ public final class FsUtils {
 
     /**
      * Prefers a workspace-relative path for user-facing listings, but keeps absolute
-     * paths that point outside of the current workspace.
+     * paths that point outside the current workspace.
      */
     public static String displayPath(CommandSourceStack source, Path path) {
         Path absolute = path.toAbsolutePath().normalize();

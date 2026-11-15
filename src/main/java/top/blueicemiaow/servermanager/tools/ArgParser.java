@@ -45,7 +45,7 @@ public final class ArgParser {
                 continue;
             }
 
-            if (arg.length() > 1 && arg.charAt(0) == '-' && !arg.equals("-")) {
+            if (arg.length() > 1 && arg.charAt(0) == '-') {
                 for (int j = 1; j < arg.length(); j++) {
                     char option = arg.charAt(j);
 
@@ -99,7 +99,7 @@ public final class ArgParser {
         StringBuilder invalid = new StringBuilder();
         for (char option : flags) {
             if (accepted.indexOf(option) < 0) {
-                invalid.append(invalid.length() == 0 ? "" : ", ").append('-').append(option);
+                invalid.append(invalid.isEmpty() ? "" : ", ").append('-').append(option);
             }
         }
         return invalid.toString();
@@ -116,7 +116,7 @@ public final class ArgParser {
         StringBuilder invalid = new StringBuilder();
         for (char option : values.keySet()) {
             if (accepted.indexOf(option) < 0) {
-                invalid.append(invalid.length() == 0 ? "" : ", ").append('-').append(option);
+                invalid.append(invalid.isEmpty() ? "" : ", ").append('-').append(option);
             }
         }
         return invalid.toString();

@@ -23,7 +23,7 @@ public class Ls {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection environment) {
         dispatcher.register(Commands.literal("ls")
-                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(context -> execute(context.getSource(), ""))
                 .then(Commands.argument("args", StringArgumentType.greedyString())
                         .executes(context -> execute(

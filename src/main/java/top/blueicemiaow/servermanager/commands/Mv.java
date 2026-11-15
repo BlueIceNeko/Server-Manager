@@ -21,7 +21,7 @@ public class Mv {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection environment) {
         dispatcher.register(Commands.literal("mv")
-                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
                 .then(Commands.argument("args", StringArgumentType.greedyString())
                         .executes(context -> execute(
                                 context.getSource(),
@@ -59,7 +59,7 @@ public class Mv {
             return 0;
         }
         if (operands.size() == 1) {
-            FsUtils.error(source, "mv: missing destination file operand after " + FsUtils.quote(operands.get(0)));
+            FsUtils.error(source, "mv: missing destination file operand after " + FsUtils.quote(operands.getFirst()));
             return 0;
         }
 
@@ -67,7 +67,7 @@ public class Mv {
         boolean verbose = arguments.has('v');
 
         List<String> sources = operands.subList(0, operands.size() - 1);
-        String destinationOperand = operands.get(operands.size() - 1);
+        String destinationOperand = operands.getLast();
         Path destination = FsUtils.resolve(source, destinationOperand);
         boolean destinationIsDirectory = Files.isDirectory(destination);
 
@@ -140,7 +140,7 @@ public class Mv {
                     failed = true;
                     continue;
                 }
-                if (targetIsDirectory && sourceIsDirectory) {
+                if (targetIsDirectory) {
                     try {
                         if (!FsUtils.isEmptyDirectory(target)) {
                             FsUtils.error(source, "mv: cannot move " + FsUtils.quote(operand) + " to "
@@ -178,7 +178,6 @@ public class Mv {
     private static void move(Path source, Path target, boolean replaceEmptyDirectory) throws IOException {
         try {
             Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-            return;
         } catch (IOException firstFailure) {
             // Files.move is not guaranteed to fall back to copy+delete on every platform/filesystem.
             try {

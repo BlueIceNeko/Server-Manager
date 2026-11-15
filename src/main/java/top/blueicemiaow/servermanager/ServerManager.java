@@ -12,6 +12,8 @@ public class ServerManager implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Initializing Server Manager...");
-        Register.commands();
+        Register.gamemasterCommands();
+        Register.adminCommands();
+        Register.ownerCommands();
     }
 }

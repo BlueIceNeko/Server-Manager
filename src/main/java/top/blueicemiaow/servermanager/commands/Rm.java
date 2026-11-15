@@ -18,7 +18,7 @@ public class Rm {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection environment) {
         dispatcher.register(Commands.literal("rm")
-                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
                 .then(Commands.argument("args", StringArgumentType.greedyString())
                         .executes(context -> execute(
                                 context.getSource(),
