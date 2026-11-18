@@ -3,7 +3,7 @@
   "id": "server_manager",
   "version": "${version}",
   "name": "Server Manager",
-  "description": "A simple server shell & file accessor.",
+  "description": "A simple server file accessor & program executer.",
   "authors": [
     {
       "name": "BlueIceNeko",
@@ -14,7 +14,10 @@
       }
     }
   ],
-  "contact": {},
+  "contact": {
+    "sources": "https://github.com/BlueIce-Dev/Server-Manager",
+    "issues": "https://github.com/BlueIce-Dev/Server-Manager/issues"
+  },
   "license": "GPL-3.0-only",
   "icon": "assets/server_manager/icon.png",
   "environment": "*",
